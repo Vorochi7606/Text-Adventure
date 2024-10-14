@@ -2,6 +2,14 @@
 {
     internal class Program
     {
+        enum Items
+        {
+            None,
+            Excalibur,
+            BlackKnightArm,
+            SplitCoconut,
+            HolyHandGrenade
+        }
         internal struct Stats
         {
             public int strength;
@@ -15,20 +23,32 @@
             public string name;
             public string favoriteColor;
             public string yourQuest;
+            public string[] inventory;
         }
         static string answer;
 
         static Stats stats;
         static GeneralInfo info;
+        static Items playerItem;
 
+        static void WriteLetterByLetter(string text, int delay = 15)
+        {
+            for (int i = 0; i < text.Length; i++)
+            {
+                Console.Write(text[i]);
+                Thread.Sleep(delay);
+            }
+
+            Console.WriteLine();
+        }
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello, World!");
-            Thread.Sleep(1000);
+            info.inventory = new string[] { "Excalibur", "Split Coconut", "", "" };
             PlayerName();
+            //StatsSetup();
         }
 
-        static string PromptPlayer()
+        static string PromptPlayer() // Asks player question, returns input to original location
         {
             string input;
 
@@ -40,19 +60,40 @@
 
             return input;
         }
-        static void PlayerName()
+
+        static int RollNumber(int min, int max) //rolls random number, returns number after rollCount rolls
         {
-            Console.WriteLine("What is your name?");
+            Console.ForegroundColor = ConsoleColor.Green;
+            int diceRoll;
+            diceRoll = 0;
+
+            for (int i = 0; i < 20; ++i)
+            {
+                Random rng = new Random();
+                diceRoll = rng.Next(min, max);
+
+                Console.Write("> " + diceRoll + "\r");
+                Thread.Sleep(50);
+            }
+
+            Console.WriteLine();
+            Console.ForegroundColor = ConsoleColor.Gray;
+            return diceRoll;
+
+        }
+        static void PlayerName() // Asks player name, and saves the answer
+        {
+            WriteLetterByLetter("What is your name?");
             Thread.Sleep(1000);
 
             info.name = PromptPlayer();
-            Console.WriteLine("Your name is " + info.name + "?");
-            Console.WriteLine("YES | NO");
+            WriteLetterByLetter("Your name is " + info.name + "?");
+            WriteLetterByLetter("YES | NO");
             answer = PromptPlayer();
 
-            if (answer == "YES")
+            if (answer == "YES") // Continue scene or ask again
             {
-                Console.WriteLine("Welcome, " + info.name + ".");
+                WriteLetterByLetter("Welcome, " + info.name + ".");
 
                 PlayerColor();
             }
@@ -62,18 +103,18 @@
             }
         }
 
-        static void PlayerColor()
+        static void PlayerColor() // Asks player favorite color, and saves the answer
         {
-            Console.WriteLine("What is your favorite color?");
+            WriteLetterByLetter("What is your favorite color?");
             Thread.Sleep(1000);
             info.favoriteColor = PromptPlayer();
-            Console.WriteLine("Your favorite color is " + info.favoriteColor + "?");
-            Console.WriteLine("YES | NO");
+            WriteLetterByLetter("Your favorite color is " + info.favoriteColor + "?");
+            WriteLetterByLetter("YES | NO");
             answer = PromptPlayer();
 
-            if (answer == "YES")
+            if (answer == "YES") // Continue scene or ask again
             {
-                Console.WriteLine(info.favoriteColor + " is a good color.");
+                WriteLetterByLetter(info.favoriteColor + " is a good color.");
 
                 PlayerQuest();
             }
@@ -82,29 +123,59 @@
                 PlayerColor();
             }
         }
-        static void PlayerQuest()
+        static void PlayerQuest() // Asks object player seeks, and saves the answer
         {
-            Console.WriteLine("What is your quest? (An object)");
+            WriteLetterByLetter("What is your quest? (An object)");
             Thread.Sleep(1000);
             info.yourQuest = PromptPlayer();
-            Console.WriteLine("Your are seeking the mythical " + info.yourQuest + "?");
-            Console.WriteLine("YES | NO");
+            WriteLetterByLetter("Your are seeking the mythical " + info.yourQuest + "?");
+            WriteLetterByLetter("YES | NO");
             answer = PromptPlayer();
 
-            if (answer == "YES")
+            if (answer == "YES") // Continue scene or ask again
             {
-                Console.WriteLine("Then the " + info.yourQuest + " you shall seek.");
+                WriteLetterByLetter("Then the " + info.yourQuest + " you shall seek.");
 
-                OpeningScene();
+                StatsSetup();
             }
             else
             {
                 PlayerQuest();
             }
         }
+        static void StatsSetup()
+        {
+            Console.WriteLine();
+            WriteLetterByLetter("Roll for your strength:");
+            Console.ReadKey(true);
+            stats.strength = RollNumber(1, 7);
+            WriteLetterByLetter("You rolled a " + stats.strength + ".");
+            Thread.Sleep(1000);
+
+            Console.WriteLine();
+            WriteLetterByLetter("Roll for your defense:");
+            Console.ReadKey(true);
+            stats.defense = RollNumber(1, 7);
+            WriteLetterByLetter("You rolled a " + stats.defense + ".");
+            Thread.Sleep(1000);
+
+            Console.WriteLine();
+            WriteLetterByLetter("Roll for your wisdom:");
+            Console.ReadKey(true);
+            stats.wisdom = RollNumber(1, 7);
+            WriteLetterByLetter("You rolled a " + stats.wisdom + ".");
+            Thread.Sleep(1000);
+
+            Console.WriteLine();
+            WriteLetterByLetter("Roll for your charisma:");
+            Console.ReadKey(true);
+            stats.charisma = RollNumber(1, 7);
+            WriteLetterByLetter("You rolled a " + stats.charisma + ".");
+            Thread.Sleep(1000);
+        }
         static void OpeningScene()
         {
-            Console.WriteLine("Opening Scene");
+            WriteLetterByLetter("Opening Scene");
         }
     }
 }
