@@ -2,14 +2,6 @@
 {
     internal class Program
     {
-        enum Items
-        {
-            None,
-            Excalibur,
-            BlackKnightArm,
-            SplitCoconut,
-            HolyHandGrenade
-        }
         internal struct Stats
         {
             public int strength;
@@ -20,16 +12,42 @@
 
         internal struct GeneralInfo
         {
+            public enum Items
+            {
+                /// <summary>
+                /// Empty item slot
+                /// </summary>
+                None,
+
+                /// <summary>
+                /// The King's Sword, handed out by strange women living in swamps
+                /// </summary>
+                Excalibur,
+
+                /// <summary>
+                /// The arm of a former foe
+                /// </summary>
+                BlackKnightArm,
+
+                /// <summary>
+                /// A noble steed
+                /// </summary>
+                SplitCoconut,
+
+                /// <summary>
+                /// The greatest of weapons
+                /// </summary>
+                HolyHandGrenade
+            }
             public string name;
             public string favoriteColor;
             public string yourQuest;
-            public string[] inventory;
+            public Items[] inventory;
         }
         static string answer;
 
         static Stats stats;
         static GeneralInfo info;
-        static Items playerItem;
 
         static void WriteLetterByLetter(string text, int delay = 15)
         {
@@ -38,16 +56,63 @@
                 Console.Write(text[i]);
                 Thread.Sleep(delay);
             }
+        }
+        static void WriteLetterByLetterLine(string text, int delay = 15)
+        {
+            WriteLetterByLetter(text, delay);
 
             Console.WriteLine();
         }
+
         static void Main(string[] args)
         {
-            info.inventory = new string[] { "Excalibur", "Split Coconut", "", "" };
+            info.inventory = new GeneralInfo.Items[] { GeneralInfo.Items.Excalibur, GeneralInfo.Items.SplitCoconut, GeneralInfo.Items.None, GeneralInfo.Items.None };
             PlayerName();
             //StatsSetup();
+            //InventorySetup();
         }
 
+        static void InventorySetup()
+        {
+            WriteLetterByLetterLine("Which of the following do you want to be in your first inventory slot?");
+            MakeChoice(0, GeneralInfo.Items.Excalibur, GeneralInfo.Items.SplitCoconut, GeneralInfo.Items.BlackKnightArm, GeneralInfo.Items.HolyHandGrenade);
+
+            WriteLetterByLetterLine("Which of the following do you want to be in your second inventory slot?");
+            MakeChoice(1, GeneralInfo.Items.Excalibur, GeneralInfo.Items.SplitCoconut, GeneralInfo.Items.BlackKnightArm, GeneralInfo.Items.HolyHandGrenade);
+
+            WriteLetterByLetterLine("Which of the following do you want to be in your third inventory slot?");
+            MakeChoice(2, GeneralInfo.Items.Excalibur, GeneralInfo.Items.SplitCoconut, GeneralInfo.Items.BlackKnightArm, GeneralInfo.Items.HolyHandGrenade);
+
+            WriteLetterByLetterLine("Which of the following do you want to be in your fourth inventory slot?");
+            MakeChoice(3, GeneralInfo.Items.Excalibur, GeneralInfo.Items.SplitCoconut, GeneralInfo.Items.BlackKnightArm, GeneralInfo.Items.HolyHandGrenade);
+        }
+
+        static void MakeChoice(int index, params GeneralInfo.Items[] choices)
+        {
+            for (int i = 0; i < choices.Length; i++)
+            {
+                WriteLetterByLetter(choices[i].ToString().ToUpper());
+
+                if (i < choices.Length - 1)
+                {
+                    WriteLetterByLetter(" | ");
+                }
+            }
+
+            Console.WriteLine();
+            string choice = PromptPlayer();
+
+            if (Enum.TryParse(choice, true, out GeneralInfo.Items item))
+            {
+                info.inventory[index] = item;
+                WriteLetterByLetterLine("The " + item.ToString() + " has now been claimed. It should serve you well.");
+            }
+            else
+            {
+                WriteLetterByLetterLine("Please try again...");
+                MakeChoice(index, choices);
+            }
+        }
         static string PromptPlayer() // Asks player question, returns input to original location
         {
             string input;
